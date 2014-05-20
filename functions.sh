@@ -179,15 +179,10 @@ local move_or_delete=$7
 }
 function move_local {
 # call function passing "original location" "new location" "filename" "move or delete"
-if [ $# -lt 3 ]; then
+if [ $# -ne 4 ]; then
         echo "`date` - *******Something went wrong - wrong number of parameters passed to $FUNCNAME" >> $log_file
         exit 99
 fi
-if [ $# -gt 4]; then
-        echo "`date` - *******Something went wrong - wrong number of parameters passed to $FUNCNAME" >> $log_file
-        exit 99
-fi
-
 
 local orig_loc=$1
 local new_loc=$2
