@@ -79,6 +79,32 @@ local filename=$6
         popd
 
 }
+
+function copy_to_smb_rename {
+# call function passing "local location" "host" "volume" "authfile" "remote location" "filename" "newfilename"
+if [ $# -ne 7 ]; then
+        echo "`date` - *******Something went wrong - wrong number of parameters passed to $FUNCNAME" >> $log_file
+        exit 99
+fi
+local local_loc=$1
+local host=$2
+local volume=$3
+local authfile=$4
+local remote_loc=$5
+local filename=$6
+local newfilename=$7
+        pushd $local_loc
+        echo "`date` - About to copy to smb $filename" >> $log_file
+        smbclient //$host/$volume -A $authfile -D $remote_loc -E -c "prompt; put $filename $newfilename" >> $log_file
+        if [ $? -ne 0 ]; then
+                echo "`date` - *******Something went wrong with the $FUNCNAME function " >> $log_file
+                exit 7
+        fi
+        echo "`date` - Copy to smb successful for $filename" >> $log_file
+        popd
+
+}
+
 function copy_from_smb {
 # call function passing "local location" "host" "volume" "authfile" "remote location" "filename"
 if [ $# -ne 6 ]; then
