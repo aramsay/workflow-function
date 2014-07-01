@@ -251,3 +251,12 @@ local max_files=$2
         fi
         echo "`date` - Number of files in destination OK - continuing" >> $log_file
 }
+
+function send_to_slack {
+	error_msg=payload={\\"""channel\\""":\\"""#server-monitor-alerts\\""",\\"""username\\""":\\"""webhookbot\\""",\\"""text\\""":\\"""Error detected on `uname -n` in script $(basename $0)\\""",\\"""icon_emoji\\""":\\""":ghost:\\"""}
+	echo $error_msg
+	#curl -X POST --data-urlencode 'payload={"channel": "#server-monitor-alerts", "username": "webhookbot", "text": "Error detected on `uname -n` in script $(basename $0)", "icon_emoji": ":ghost:"}' https://pcs-publishing.slack.com/services/hooks/incoming-webhook?token=zmhoAXB3LWR0QA6SFDSjqn8L
+	curl -X POST --data-urlencode '$error_msg' https://pcs-publishing.slack.com/services/hooks/incoming-webhook?token=zmhoAXB3LWR0QA6SFDSjqn8L
+
+	exit 100
+}
