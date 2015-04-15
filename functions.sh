@@ -28,7 +28,7 @@ local mask_file=$5
 local max_files=$6
 local tmp_file=$7
         # get list of top 100 files matching expression below
-        smbclient //$host/$volume -A $authfile -D $remote_loc -c "ls" 2> /dev/null | awk '{print substr($0,1,length($0)-38)}' | grep -i -f $mask_file | sed 's/^[ \t]*//;s/^/\"/;s/[ \t]*$//;s/$/\"/;' | head -$max_files 1> $tmp_file
+        smbclient //$host/$volume -A $authfile -D $remote_loc -c "ls" 2> /dev/null | awk '{print substr($0,1,length($0)-38)}' | sed 's/ *$//' | grep -i -f $mask_file | sed 's/^[ \t]*//;s/^/\"/;s/[ \t]*$//;s/$/\"/;' | head -$max_files 1> $tmp_file
         if [ $? -ne 0 ]; then
                 echo "`date` - *******Something went wrong with $FUNCNAME function" >> $log_file
                 exit 5
@@ -47,7 +47,7 @@ local max_files=$3
 local tmp_file=$4
         pushd $local_loc
         echo "`date` - Getting list of files from $local_loc" >> $log_file
-        find . -maxdepth 1 -type f | cut -f2- -d'/' |  grep -i -f $mask_file | sed 's/^[ \t]*//;s/^/\"/;s/[ \t]*$//;s/$/\"/;' | head -$max_files > $tmp_file
+        find . -maxdepth 1 -type f | cut -f2- -d'/' |  grep -i -f $mask_file | sort | sed 's/^[ \t]*//;s/^/\"/;s/[ \t]*$//;s/$/\"/;' | head -$max_files > $tmp_file
         if [ $? -ne 0 ]; then
                 echo "`date` - *******Something went wrong with the $FUNCNAME function" >> $log_file
                 exit 6
@@ -147,7 +147,8 @@ local move_or_delete=$7
         if [ $move_or_delete -eq 1 ]; then
                 echo "`date` - About to move on smb $filename" >> $log_file
                 file_rename=1
-                smbclient //$host/$volume -A $authfile -D $remote_source_loc\\$remote_dest_loc -E -c "rename $filename $filename.old"
+		date_string=`date +"%Y%m%d%H%M%S"`
+                smbclient //$host/$volume -A $authfile -D $remote_source_loc\\$remote_dest_loc -E -c "rename $filename $filename.old.$date_string"
                 if [ $? -ne 0 ]; then
                         echo "`date` - Didnt find prexisting remote file to remove, so carrying on anyway " >>$log_file
                         file_rename=0
