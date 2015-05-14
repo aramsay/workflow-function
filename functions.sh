@@ -13,6 +13,7 @@ fi
 echo $$ > $pidfile
 trap 'rm -f "$pidfile"; exit $?' INT TERM EXIT
 }
+# the real stuff starts now
 
 function get_list_smb {
 # call function passing "host" "volume" "authfile" "remote location" "mask file" "max number of files" and "temporary storage file"
