@@ -200,14 +200,14 @@ pushd $orig_loc
                 file_rename=0
                 if [ -f "$new_loc/$filename" ]; then
                         echo "`date` - Found existing file on local system - removing " >>$log_file
-                        mv "$new_loc/$new_filename" "$new_loc/$new_filename.old"
+                        mv -- "$new_loc/$new_filename" "$new_loc/$new_filename.old"
                         file_rename=1
                 fi
-                mv "$orig_loc/$new_filename" $new_loc/
+                mv -- "$orig_loc/$new_filename" $new_loc/
                 if [ $? -ne 0 ]; then
                         echo "`date` - *******Something went wrong with the $FUNCNAME locate rename function " >>$log_file
                         if [ $file_rename -eq 1 ]; then
-                                mv "$new_loc/$new_filename.old" "$new_loc/$new_filename"
+                                mv -- "$new_loc/$new_filename.old" "$new_loc/$new_filename"
                                 if [ $? -ne 0 ]; then
                                         echo "`date` - *******Something went wrong with the $FUNCNAME trying to put old file back" >>$log_file
                                 fi
@@ -215,12 +215,12 @@ pushd $orig_loc
                         exit 10
                 fi
                 if [ $file_rename -eq 1 ]; then
-                        rm "$new_loc/$new_filename.old"
+                        rm -- "$new_loc/$new_filename.old"
                 fi
                 echo "`date` - Move on local successful for $new_filename" >>$log_file
         else
                 echo "`date` - About to delete on local $new_filename" >> $log_file
-                rm $new_filename
+                rm -- $new_filename
                 if [ $? -ne 0 ]; then
                         echo "`date` - *******Something went wrong with the $FUNCNAME trying to delete $new_filename " >>$log_file
                         exit 8
