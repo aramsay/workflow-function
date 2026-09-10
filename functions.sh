@@ -237,6 +237,30 @@ function strip_quotes {
 echo $1 | sed 's/^"//;s/"$//'
 }
 
+function rename_bare_pdf {
+# call function passing "local location" "filename"
+# if filename is a PDF with no _V<n> version suffix (e.g. AD00786.pdf), rename it to add _V1 (e.g. AD00786_V1.pdf)
+if [ $# -ne 2 ]; then
+        echo "`date` - *******Something went wrong - wrong number of parameters passed to $FUNCNAME" >> $log_file
+        exit 99
+fi
+local local_loc=$1
+local filename=$2
+local clean_filename=`strip_quotes "$filename"`
+        if [[ "$clean_filename" =~ \.[Pp][Dd][Ff]$ ]] && [[ ! "$clean_filename" =~ _[Vv][0-9]+\.[Pp][Dd][Ff]$ ]]; then
+                local base="${clean_filename%.*}"
+                local ext="${clean_filename##*.}"
+                local new_filename="${base}_V1.${ext}"
+                echo "`date` - Bare PDF detected - renaming $clean_filename to $new_filename" >> $log_file
+                mv -- "$local_loc/$clean_filename" "$local_loc/$new_filename"
+                if [ $? -ne 0 ]; then
+                        echo "`date` - *******Something went wrong with the $FUNCNAME function renaming $clean_filename" >> $log_file
+                        exit 12
+                fi
+                echo "`date` - Rename successful: $clean_filename -> $new_filename" >> $log_file
+        fi
+}
+
 function check_local_filecount {
 # call function passing "location" "max files"
 if [ $# -ne 2 ]; then
